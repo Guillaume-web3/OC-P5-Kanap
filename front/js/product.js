@@ -50,14 +50,52 @@ fetch("http://localhost:3000/api/products/"+id)
     console.log("Probleme avec l'opérateur fetch : "+err.message);
 });
 
-//Gestion de l'ajout au panier
-let buttonAddToCard = document.getElementById("addToCard") //Récupère l'élément bouton
-buttonAddToCard.addEventListener("click",function() {   // Ecoute l'évènement click sur le bouton
+ // Enregistrement du panier dans le localStorage
+function saveCart(cart) {
+    localStorage.setItem("cart",JSON.stringify(cart)); // Données du panier transformées en chaine de caractère
+    
+}
+// Récupération du panier à partir du localStorage
+function getCart() {
+    let cart = localStorage.getItem("cart");
+    if (cart == null) { // Test si le panier est vide - Evite l'erreur de reading push sur un null
+        return []; // Retourne un tableau vide si le panier est vide
+    }
+    else {
+        return JSON.parse(cart); // Retourne la valeur du panier si il n'est pas vide (données transformées en objet)
+    }
+}
+// Ajout d'un produit au panier
 
-    // let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
-    // console.log(color);
-    // let quantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
-    // console.log(quantity);
-  
+
+// Gestion de l'ajout au panier
+let buttonAddToCart = document.getElementById("addToCart") // Récupère l'élément bouton
+buttonAddToCart.addEventListener("click",function () {   // Ecoute l'évènement click sur le bouton
+    let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
+    let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
+    let product = {"id":id,"color":color}; // Définition d'un produit
+    console.log(product);
+
+    // Probleme de portée des variables selectedQuantity et Color qui m'oblige à définir la fonction ici (à voir avec Stéphane)
+
+    function addToCart(product) {
+        let cart = getCart();
+        let foundProduct = cart.find(p => p.id == product.id && p.color == product.color) // Recherche de la présence du produit dans le panier (id & couleur)
+        if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
+            product.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier
+            console.log("Changement de quantité d'un produit existant dans le panier")
+            console.log("Quantité dans le panier :",foundProduct.quantity);
+            console.log("Quantité à rajouter ;",selectedQuantity);
+            console.log("Nouvelle quantité dans le panier :",product.quantity);            
+        }
+        else {
+            product.quantity = selectedQuantity; // On ajoute l'article, à la quantité demandée
+            cart.push(product);
+            console.log("Ajout d'un nouveau produit");
+        }    
+        saveCart(cart);
+    }
+    addToCart(product);
 });
 
+  

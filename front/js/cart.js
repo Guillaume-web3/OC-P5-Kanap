@@ -17,7 +17,13 @@ function getCart() {
 
 function addCart(product) {
     let cart = getCart();
-    let foundProduct = cart.find()
-    cart.push(product);
+    let foundProduct = cart.find(p => p.id == product.id) // => Pas une autre facon de l'écrire?
+    if (foundProduct != undefined) {
+        foundProduct.quantity++; // => ++ à remplacer par une variable contenant la quantité à rajouter (pas forcément +1)
+    }
+    else {
+        product.quantity = 1; // => =1 à remplacer par une varible contenant la quantité à rajouter
+        cart.push(product);
+    }    
     saveCart(cart);
 }
