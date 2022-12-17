@@ -39,7 +39,7 @@ fetch("http://localhost:3000/api/products")
         img.setAttribute("alt", alt);
         
         // Ajout des class aux <h3>
-        h3.classList.add("productName");
+        h3.setAttribute("class","productName")
 
         // Ajout des noms des produits
         h3.innerText = product.name;
