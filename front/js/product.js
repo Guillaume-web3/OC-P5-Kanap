@@ -50,10 +50,9 @@ fetch("http://localhost:3000/api/products/"+id)
     console.log("Probleme avec l'opérateur fetch : "+err.message);
 });
 
- // Enregistrement du panier dans le localStorage
+// Enregistrement du panier dans le localStorage
 function saveCart(cart) {
-    localStorage.setItem("cart",JSON.stringify(cart)); // Données du panier transformées en chaine de caractère
-    
+    localStorage.setItem("cart",JSON.stringify(cart)); // Données du panier transformées en chaine de caractère    
 }
 // Récupération du panier à partir du localStorage
 function getCart() {
@@ -66,36 +65,33 @@ function getCart() {
     }
 }
 // Ajout d'un produit au panier
-
-
-// Gestion de l'ajout au panier
 let buttonAddToCart = document.getElementById("addToCart") // Récupère l'élément bouton
 buttonAddToCart.addEventListener("click",function () {   // Ecoute l'évènement click sur le bouton
     let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
     let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
-    let product = {"id":id,"color":color}; // Définition d'un produit
-    console.log(product);
+    let cartProduct = {"id":id,"color":color}; // Définition d'un produit
+    console.log(cartProduct);
 
     // Probleme de portée des variables selectedQuantity et Color qui m'oblige à définir la fonction ici (à voir avec Stéphane)
 
-    function addToCart(product) {
+    function addToCart(cartProduct) {
         let cart = getCart();
-        let foundProduct = cart.find(p => p.id == product.id && p.color == product.color) // Recherche de la présence du produit dans le panier (id & couleur)
+        let foundProduct = cart.find(p => p.id == cartProduct.id && p.color == cartProduct.color) // Recherche de la présence du produit dans le panier (id & couleur)
         if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
-            product.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier
+            cartProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier
             console.log("Changement de quantité d'un produit existant dans le panier")
             console.log("Quantité dans le panier :",foundProduct.quantity);
             console.log("Quantité à rajouter ;",selectedQuantity);
-            console.log("Nouvelle quantité dans le panier :",product.quantity);            
+            console.log("Nouvelle quantité dans le panier :",cartProduct.quantity);         
         }
         else {
-            product.quantity = selectedQuantity; // On ajoute l'article, à la quantité demandée
-            cart.push(product);
+            cartProduct.quantity = selectedQuantity; // On ajoute l'article, à la quantité demandée
+            cart.push(cartProduct);
             console.log("Ajout d'un nouveau produit");
         }    
         saveCart(cart);
     }
-    addToCart(product);
+    addToCart(cartProduct);
 });
 
   
