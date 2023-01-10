@@ -102,7 +102,8 @@ async function getCartProductInfo () {
         pQuantity.innerText = "Qté :";
         pDelete.innerText = "Supprimer";
 
-        inputQuantity.addEventListener("change",changeProductQuantity)
+        inputQuantity.addEventListener("change",changeProductQuantity);
+        pDelete.addEventListener("click",deleteItem);
     }
 }
 
@@ -137,18 +138,37 @@ async function getTotalSelectedPrice() {
 //
 
 // Modification de la quantité d'un article
-
 function changeProductQuantity(event){
-    console.log(event)
-    // let itemQuantity = document.querySelector(".cart__items");
-    // console.log(itemQuantity);
-
-    //     let articleData = itemQuantity.closest("cart__item");
-    //     let id = articleData.data-id;
-    //     console.log(id);
+    let productData = event.target.closest(".cart__item"); // Placement sur l'item correspondant à l'event (changement de quantité)
+    let id = productData.dataset.id; // Récupération de l'id via le data-id HTML
+    let color = productData.dataset.colors; // Récupération de la couleur via le data-colors HTML
+    let newProductQuantity = event.target.value; // Récupération de la nouvelle quantité désirée
+    let cart = getCart(); // Recupération du panier
+    let foundProduct = cart.find(p => p.id == id && p.color == color); // Recherche de la présence du produit dans le panier (id & couleur)
+    foundProduct.quantity = newProductQuantity; // Redéfinition de la quantité
+    saveCart(cart); // Sauvegarde des changements du panier
 }
 
+// Enregistrement du panier dans le localStorage
+function saveCart(cart) {
+    localStorage.setItem("cart",JSON.stringify(cart)); // Données du panier transformées en chaine de caractère    
+}
 
 // Suppression d'un article
-function deleteArticle () {
+function deleteItem (event) {
+    let productToDelete = event.target.closest(".cart__item"); // Placement sur l'item correspondant à l'event
+    console.log(productToDelete);
+    let id = productToDelete.dataset.id;
+    console.log(id);
+    let color = productToDelete.dataset.colors;
+    console.log(color);
+    let cart = getCart();
+    console.log(cart);
+    let foundProduct = cart.find(p => p.id == id && p.color == color);
+    console.log(foundProduct);
+    cart.splice(cart.indexOf(foundProduct),1) // Supprime l'index renvoyé par foundProduct du tableau
+    console.log(cart);
+    saveCart(cart);
+    location.reload(); // Rafraichis la page
+
 }
