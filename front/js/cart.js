@@ -102,6 +102,7 @@ async function getCartProductInfo () {
         pQuantity.innerText = "Qté :";
         pDelete.innerText = "Supprimer";
 
+        // Ecoute des évènements
         inputQuantity.addEventListener("change",changeProductQuantity);
         pDelete.addEventListener("click",deleteItem);
     }
@@ -156,4 +157,140 @@ function deleteItem (event) {
     cart.splice(cart.indexOf(foundProduct),1) // Supprime du tableau l'index renvoyé par foundProduct
     saveCart(cart);
     location.reload(); // Rafraichis la page
+}
+
+// *************** Début validation des formats de données du formulaire *******************
+
+// Ecoute des évènements
+let firstName = document.getElementById("firstName");
+firstName.addEventListener("change",firstNameTest);
+let lastName = document.getElementById("lastName");
+lastName.addEventListener("change",lastNameTest);
+let address = document.getElementById("address");
+address.addEventListener("change",addressTest);
+let city = document.getElementById("city");
+city.addEventListener("change",cityTest);
+let email = document.getElementById("email");
+email.addEventListener("change",emailTest);
+
+// Définition des expressions régulieres ==> à finir de définir
+let nameExReg = /^[a-zA-Z]{3-20}$/;
+let adressExReg = /^ $/;
+let cityExReg = /^[A-Z]{3-45}$/;
+let emailExReg = /^ $/;
+
+// Validation du format du prénom
+function firstNameTest() {
+    let inputName = "firstName";
+    if(nameExReg.test(firstName.value)) { // Test par expressions régulières
+    console.log("format valide");
+    correctFormat(inputName); // Vers la fonction d'affichage en cas de format valide
+    return true;
+    }
+    else {
+    console.log("format non valide");
+    formatError(inputName); // Vers la fonction d'affichage en cas de format non valide
+    return false;
+    }
+}
+
+// Validation du format du nom
+function lastNameTest() {
+    let inputName = "lastName";
+    if(nameExReg.test(lastName.value)) {
+    console.log("format valide");
+    correctFormat(inputName);
+    return true;
+    }
+    else {
+    console.log("format non valide");
+    formatError(inputName);
+    return false;
+    }
+}
+
+// Validation du format de l'adresse
+function addressTest() {
+    let inputName = "address";
+    if(adressExReg.test(address.value)) {
+    console.log("format valide");
+    correctFormat(inputName);
+    return true;
+    }
+    else {
+    console.log("format non valide");
+    formatError(inputName);
+    return false;
+    }
+}
+
+// Validation du format de la ville
+function cityTest() {
+    let inputName = "city";
+    if(cityExReg.test(city.value)) {
+    console.log("format valide");
+    correctFormat(inputName);
+    return true;
+    }
+    else {
+    console.log("format non valide");
+    formatError(inputName);
+    return false;
+    }
+}
+
+// Validation du format de l'email
+function emailTest() {
+    let inputName = "email";
+    if(emailExReg.test(email.value)) {
+    console.log("format valide");
+    correctFormat(inputName);
+    return true;
+    }
+    else {
+    console.log("format non valide");
+    formatError(inputName);
+    return false;
+    }
+}
+
+// Affichage d'une erreur de format
+function formatError (inputName) {
+    let idErrorMsg = inputName+"ErrorMsg"; // Création de l'id dynamique de l'input
+    document.getElementById(idErrorMsg).innerText = "Le format n'est pas valide"; // Affichage du message d'erreur
+}
+
+// Affichage d'un format correct
+function correctFormat (inputName) {
+    let idErrorMsg = inputName+"ErrorMsg"; // Création de l'id dynamique de l'input
+    document.getElementById(idErrorMsg).innerText = ""; // Suppression du message d'erreur éventuel
+}
+
+// *************** Fin de la partie validation des formats de données du formulaire *******************
+
+// *************** Envoie des données du formulaire vers l'API *******************
+
+
+// Envoie du formulaire si test ok
+function sendForm() {
+    if(firstNameTest()&(lastNameTest)) {
+        console.log("tout va bien, on envoi");
+        createContact(); // Création de l'objet contact
+    }
+    else {
+        console.log("ça déconne");
+    }
+}
+
+// Création d'un contact
+function createContact () {
+    let contact = {
+        firstName : firstName.value,
+        lastName : lastName.value,
+        adress : adress.value,
+        city : city.value,
+        email : email.value
+    }
+    console.log(contact);
+    return contact
 }
