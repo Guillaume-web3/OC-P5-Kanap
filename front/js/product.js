@@ -66,6 +66,7 @@ function getCart() {
 }
 // Ajout d'un produit au panier
 let buttonAddToCart = document.getElementById("addToCart") // Récupère l'élément bouton
+
 buttonAddToCart.addEventListener("click",function () {   // Ecoute l'évènement click sur le bouton
     let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
     let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
@@ -78,16 +79,11 @@ buttonAddToCart.addEventListener("click",function () {   // Ecoute l'évènement
         let cart = getCart();
         let foundProduct = cart.find(p => p.id == cartProduct.id && p.color == cartProduct.color) // Recherche de la présence du produit dans le panier (id & couleur)
         if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
-            cartProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier
-            console.log("Changement de quantité d'un produit existant dans le panier")
-            console.log("Quantité dans le panier :",foundProduct.quantity);
-            console.log("Quantité à rajouter ;",selectedQuantity);
-            console.log("Nouvelle quantité dans le panier :",cartProduct.quantity);         
+            foundProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier     
         }
         else {
-            cartProduct.quantity = selectedQuantity; // On ajoute l'article, à la quantité demandée
+            cartProduct.quantity = Number(selectedQuantity); // On ajoute l'article, à la quantité demandée
             cart.push(cartProduct);
-            console.log("Ajout d'un nouveau produit");
         }    
         saveCart(cart);
     }

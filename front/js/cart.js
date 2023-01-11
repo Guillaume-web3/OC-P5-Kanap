@@ -121,21 +121,13 @@ function getTotalSelectedQuantity() {
 async function getTotalSelectedPrice() {
     let totalSelectedPrice = 0;
     let cart = getCart();
-    console.log(cart);
     for (cartProduct of cart) { // Pour chaque produit dans le panier on va :
         let id = cartProduct.id; // Récupérer l'id
         let product = await getProductInfoById(id)
-        console.log(product);
         totalSelectedPrice += Number(cartProduct.quantity) * Number(product.price);
-        console.log(cartProduct.quantity);
-        console.log(product.price);
     }
     return totalSelectedPrice;
 }
-
-// Travaux en cours :
-// 
-//
 
 // Modification de la quantité d'un article
 function changeProductQuantity(event){
@@ -145,7 +137,7 @@ function changeProductQuantity(event){
     let newProductQuantity = event.target.value; // Récupération de la nouvelle quantité désirée
     let cart = getCart(); // Recupération du panier
     let foundProduct = cart.find(p => p.id == id && p.color == color); // Recherche de la présence du produit dans le panier (id & couleur)
-    foundProduct.quantity = newProductQuantity; // Redéfinition de la quantité
+    foundProduct.quantity = Number(newProductQuantity); // Redéfinition de la quantité
     saveCart(cart); // Sauvegarde des changements du panier
 }
 
@@ -157,18 +149,11 @@ function saveCart(cart) {
 // Suppression d'un article
 function deleteItem (event) {
     let productToDelete = event.target.closest(".cart__item"); // Placement sur l'item correspondant à l'event
-    console.log(productToDelete);
     let id = productToDelete.dataset.id;
-    console.log(id);
     let color = productToDelete.dataset.colors;
-    console.log(color);
     let cart = getCart();
-    console.log(cart);
-    let foundProduct = cart.find(p => p.id == id && p.color == color);
-    console.log(foundProduct);
-    cart.splice(cart.indexOf(foundProduct),1) // Supprime l'index renvoyé par foundProduct du tableau
-    console.log(cart);
+    let foundProduct = cart.find(p => p.id == id && p.color == color); // Trouve l'article correspondant à l'id + couleur
+    cart.splice(cart.indexOf(foundProduct),1) // Supprime du tableau l'index renvoyé par foundProduct
     saveCart(cart);
     location.reload(); // Rafraichis la page
-
 }
