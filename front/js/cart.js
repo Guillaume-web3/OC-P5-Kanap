@@ -23,9 +23,15 @@ function getCart() {
 
 // Appel de l'API
 async function getProductInfoById(id) {
-  let responseProduct = await fetch("http://localhost:3000/api/products/" + id);
-  let product = await responseProduct.json();
-  return product;
+  try {
+    let responseProduct = await fetch(
+      "http://localhost:3000/api/products/" + id
+    );
+    let product = await responseProduct.json();
+    return product;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 // Récupération des informations liées aux articles du panier
@@ -168,87 +174,72 @@ function deleteItem(event) {
   cart.splice(cart.indexOf(foundProduct), 1); // Supprime du tableau l'index renvoyé par foundProduct
   saveCart(cart);
   productToDelete.remove();
-  //location.reload(); // Rafraichis la page
 }
 
 // *************** DEBUT VALIDATION DES FORMATS DE DONNEES DU FORMULAIRE *******************
 
+let testDatas = {
+  firstNameTest: {
+    regEx: /^[a-zA-Zéèëêïîàâùüû ,.'-]{3,20}$/,
+    inputName: "firstName",
+    valid: false,
+  },
+  lastNameTest: {
+    regEx: /^[a-zA-Zéèëêïîàâùüû ,.'-]{3,20}$/,
+    inputName: "lastName",
+    valid: false,
+  },
+  addressTest: {
+    regEx: /^(?:\d+[ ])?(?:[a-zA-Z -]+[ ])?[a-zA-Z]{3,}$/,
+    inputName: "address",
+    valid: false,
+  },
+  cityTest: {
+    regEx: /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/,
+    inputName: "city",
+    valid: false,
+  },
+  emailTest: {
+    regEx:
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    inputName: "email",
+    valid: false,
+  },
+};
 // Ecoute des évènements
-let firstName = document.getElementById("firstName");
-firstName.addEventListener("change", firstNameTest);
-let lastName = document.getElementById("lastName");
-lastName.addEventListener("change", lastNameTest);
-let address = document.getElementById("address");
-address.addEventListener("change", addressTest);
-let city = document.getElementById("city");
-city.addEventListener("change", cityTest);
-let email = document.getElementById("email");
-email.addEventListener("change", emailTest);
+let firstNameInput = document.getElementById("firstName");
+firstNameInput.addEventListener("change", () =>
+  regExTest(testDatas.firstNameTest)
+);
 
-// Définition des expressions régulieres ==> à finir de définir
-let nameExReg = /^[a-zA-Zéèëêïîàâùüû ,.'-]{3,20}$/;
-let adressExReg = /^(?:\d+[ ])?(?:[a-zA-Z -]+[ ])?[a-zA-Z]{3,}$/;
-let cityExReg = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
-let emailExReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+let lastNameInput = document.getElementById("lastName");
+lastNameInput.addEventListener("change", () =>
+  regExTest(testDatas.lastNameTest)
+);
+let addressInput = document.getElementById("address");
+addressInput.addEventListener("change", () => regExTest(testDatas.addressTest));
+let cityInput = document.getElementById("city");
+cityInput.addEventListener("change", () => regExTest(testDatas.cityTest));
+let emailInput = document.getElementById("email");
+emailInput.addEventListener("change", () => regExTest(testDatas.emailTest));
 
-// Validation du format du prénom
-function firstNameTest() {
-  let inputName = "firstName";
-  if (nameExReg.test(firstName.value)) {
+// Fonction de test, commun pour tous les inputs
+// Elle prend en argument le type d'input à tester et se refère à l'objet testDatas contenants les données pour tous les tests
+function regExTest(testDatas) {
+  if (!testDatas.inputName || !testDatas.regEx) {
+    return alert("le champ doit exister");
+  }
+  let inputName = testDatas.inputName; // On défini l'inputName en fonction des données de l'objet testDatas
+  let regEx = testDatas.regEx; // On défini la regEx à tester, en fonction des données de l'objet testDatas
+  let inputValue = document.getElementById(inputName).value;
+  testDatas.valid = regEx.test(inputValue);
+  console.log(testDatas.valid);
+  console.log(testDatas);
+  if (testDatas.valid == true) {
     // Test par expressions régulières
     correctFormat(inputName); // Vers la fonction d'affichage en cas de format valide
-    return true;
   } else {
     formatError(inputName); // Vers la fonction d'affichage en cas de format non valide
-    return false;
-  }
-}
-
-// Validation du format du nom
-function lastNameTest() {
-  let inputName = "lastName";
-  if (nameExReg.test(lastName.value)) {
-    correctFormat(inputName);
-    return true;
-  } else {
-    formatError(inputName);
-    return false;
-  }
-}
-
-// Validation du format de l'adresse
-function addressTest() {
-  let inputName = "address";
-  if (adressExReg.test(address.value)) {
-    correctFormat(inputName);
-    return true;
-  } else {
-    formatError(inputName);
-    return false;
-  }
-}
-
-// Validation du format de la ville
-function cityTest() {
-  let inputName = "city";
-  if (cityExReg.test(city.value)) {
-    correctFormat(inputName);
-    return true;
-  } else {
-    formatError(inputName);
-    return false;
-  }
-}
-
-// Validation du format de l'email
-function emailTest() {
-  let inputName = "email";
-  if (emailExReg.test(email.value)) {
-    correctFormat(inputName);
-    return true;
-  } else {
-    formatError(inputName);
-    return false;
   }
 }
 
@@ -271,58 +262,54 @@ document.getElementById("order").addEventListener("click", sendToApi); // Ecoute
 
 // Validation du formulaire
 function formIsValid() {
-    if (
-      firstNameTest() &&
-      lastNameTest() &&
-      addressTest() &&
-      cityTest() &&
-      emailTest()
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  let testDatasArray = Object.values(testDatas);
+  console.log(testDatas);
+  return testDatasArray.every((element) => element.valid === true);
+}
 
 // Envoie de la commande
-async function sendToApi(event){
-    event.preventDefault();
+async function sendToApi(event) {
+  event.preventDefault();
   if (formIsValid()) {
     // Création de l'objet à envoyer
+    console.log("on y est");
     let arrayProducts = [];
     let cart = getCart();
     for (cartProduct of cart) {
-    arrayProducts.push(cartProduct.id);
+      arrayProducts.push(cartProduct.id);
     }
 
     let orderObj = {
-    contact: {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        address: address.value,
-        city: city.value,
-        email: email.value,
-    },
-    products: arrayProducts,
+      contact: {
+        firstName: firstNameInput.value,
+        lastName: lastNameInput.value,
+        address: addressInput.value,
+        city: cityInput.value,
+        email: emailInput.value,
+      },
+      products: arrayProducts,
     };
 
-    let fetchResponse = await fetch("http://localhost:3000/api/products/order", {
-              method: "POST",
-              headers: {
-                'Accept' : 'application/json',
-                'Content-type': 'application/json',
-              },
-              body: JSON.stringify(orderObj),
-            });
-        let orderResult = await fetchResponse.json();
-        console.log(orderResult)
-        goToConfirmation(orderResult)
-    }
+    let fetchResponse = await fetch(
+      "http://localhost:3000/api/products/order",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(orderObj),
+      }
+    );
+    let orderResult = await fetchResponse.json();
+    console.log(orderResult);
+    goToConfirmation(orderResult);
+  }
 }
 
 // *************** FIN ENVOIE DES DONNEES DU FORMULAIRE VERS L'API *******************
 async function goToConfirmation(orderResult) {
-    let orderId = await orderResult.orderId;
-    console.log(orderId);
-document.location.href="confirmation.html?orderId="+orderId;
+  let orderId = await orderResult.orderId;
+  console.log(orderId);
+  document.location.href = "confirmation.html?orderId=" + orderId;
 }

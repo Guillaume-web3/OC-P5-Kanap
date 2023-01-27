@@ -65,29 +65,25 @@ function getCart() {
     }
 }
 // Ajout d'un produit au panier
-let buttonAddToCart = document.getElementById("addToCart") // Récupère l'élément bouton
-
-buttonAddToCart.addEventListener("click",function () {   // Ecoute l'évènement click sur le bouton
+document.getElementById("addToCart").addEventListener("click",function () { // Ecoute l'évènement click sur le bouton
     let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
     let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
+    if (selectedQuantity <= 0) {
+        alert("Quantité saisie incorrect");
+        return false
+    }
     let cartProduct = {"id":id,"color":color}; // Définition d'un produit
     console.log(cartProduct);
-
-    // Probleme de portée des variables selectedQuantity et Color qui m'oblige à définir la fonction ici (à voir avec Stéphane)
-
-    function addToCart(cartProduct) {
-        let cart = getCart();
-        let foundProduct = cart.find(p => p.id == cartProduct.id && p.color == cartProduct.color) // Recherche de la présence du produit dans le panier (id & couleur)
-        if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
-            foundProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier     
-        }
-        else {
-            cartProduct.quantity = Number(selectedQuantity); // On ajoute l'article, à la quantité demandée
-            cart.push(cartProduct);
-        }    
-        saveCart(cart);
+    let cart = getCart();
+    let foundProduct = cart.find(p => p.id == cartProduct.id && p.color == cartProduct.color) // Recherche de la présence du produit dans le panier (id & couleur)
+    if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
+        foundProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier     
     }
-    addToCart(cartProduct);
+    else {
+        cartProduct.quantity = Number(selectedQuantity); // On ajoute l'article, à la quantité demandée
+        cart.push(cartProduct);
+    }    
+    saveCart(cart);
 });
 
   
