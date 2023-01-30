@@ -1,15 +1,6 @@
 // Affichage des informations des produits du panier
 getCartProductInfo();
 
-// Affichage des quantités et prix totaux
-
-async function displayTotals() {
-  document.getElementById("totalQuantity").innerText =
-    getTotalSelectedQuantity();
-  document.getElementById("totalPrice").innerText =
-    await getTotalSelectedPrice();
-}
-
 // Récupération du panier à partir du localStorage
 function getCart() {
   let cart = localStorage.getItem("cart");
@@ -30,7 +21,7 @@ async function getProductInfoById(id) {
     let product = await responseProduct.json();
     return product;
   } catch (err) {
-    console.log(err);
+    console.log("Probleme avec l'opérateur fetch : " + err.message);
   }
 }
 
@@ -123,32 +114,47 @@ async function getCartProductInfo() {
   displayTotals();
 }
 
+// ***************************************** DEBUT CALCULS DES TOTAUX *****************************************
+
+// Affichage des quantités et prix totaux
+async function displayTotals() {
+  document.getElementById("totalQuantity").innerText =
+    getTotalSelectedQuantity();
+  document.getElementById("totalPrice").innerText =
+    await getTotalSelectedPrice();
+}
+
 // Calcul de la quantité totale
 function getTotalSelectedQuantity() {
   let totalSelectedQuantity = 0;
-  let cart = getCart();
+  let cart = getCart(); // Appel du panier
   for (cartProduct of cart) {
-    totalSelectedQuantity += Number(cartProduct.quantity);
+    // Pour chaque produit du panier
+    totalSelectedQuantity += Number(cartProduct.quantity); // On ajoute la quantité de chaque produit à la quantité totale
   }
-  return totalSelectedQuantity;
+  return totalSelectedQuantity; // On renvoi la quantité calculée
 }
 
 // Calcul du prix total
 async function getTotalSelectedPrice() {
   let totalSelectedPrice = 0;
-  let cart = getCart();
+  let cart = getCart(); // Appel du panier
   for (cartProduct of cart) {
     // Pour chaque produit dans le panier on va :
     let id = cartProduct.id; // Récupérer l'id
-    let product = await getProductInfoById(id);
-    totalSelectedPrice += Number(cartProduct.quantity) * Number(product.price);
+    let product = await getProductInfoById(id); // Récupérer les informations produits via la fonction
+    totalSelectedPrice += Number(cartProduct.quantity) * Number(product.price); // On ajoute au prix total le prix de chaque produit * leur quantité
   }
-  return totalSelectedPrice;
+  return totalSelectedPrice; // On renvoi le prix total calculé
 }
+
+// ***************************************** FIN CALCULS DES TOTAUX *****************************************
+//
+//
+// ************************************* DEBUT MODIFICATIONS DU PANIER **************************************
 
 // Modification de la quantité d'un article
 function changeProductQuantity(event) {
-  console.log(this);
   let productData = event.target.closest(".cart__item"); // Placement sur l'item correspondant à l'event (changement de quantité)
   let id = productData.dataset.id; // Récupération de l'id via le data-id HTML
   let color = productData.dataset.colors; // Récupération de la couleur via le data-colors HTML
@@ -176,7 +182,10 @@ function deleteItem(event) {
   productToDelete.remove();
 }
 
-// *************** DEBUT VALIDATION DES FORMATS DE DONNEES DU FORMULAIRE *******************
+// ************************************* FIN MODIFICATIONS DU PANIER *************************************
+//
+//
+// ********************** DEBUT VALIDATION DES FORMATS DE DONNEES DU FORMULAIRE **************************
 
 let testDatas = {
   firstNameTest: {
@@ -233,8 +242,6 @@ function regExTest(testDatas) {
   let regEx = testDatas.regEx; // On défini la regEx à tester, en fonction des données de l'objet testDatas
   let inputValue = document.getElementById(inputName).value;
   testDatas.valid = regEx.test(inputValue);
-  console.log(testDatas.valid);
-  console.log(testDatas);
   if (testDatas.valid == true) {
     // Test par expressions régulières
     correctFormat(inputName); // Vers la fonction d'affichage en cas de format valide
@@ -256,14 +263,14 @@ function correctFormat(inputName) {
 }
 
 // *************** FIN VALIDATION DES FORMATS DE DONNEES DU FORMULAIRE *******************
-
+//
+//
 // *************** DEBUT ENVOIE DES DONNEES DU FORMULAIRE VERS L'API *******************
 document.getElementById("order").addEventListener("click", sendToApi); // Ecoute du clique sur "commander"
 
 // Validation du formulaire
 function formIsValid() {
   let testDatasArray = Object.values(testDatas);
-  console.log(testDatas);
   return testDatasArray.every((element) => element.valid === true);
 }
 
@@ -272,7 +279,6 @@ async function sendToApi(event) {
   event.preventDefault();
   if (formIsValid()) {
     // Création de l'objet à envoyer
-    console.log("on y est");
     let arrayProducts = [];
     let cart = getCart();
     for (cartProduct of cart) {
@@ -289,27 +295,34 @@ async function sendToApi(event) {
       },
       products: arrayProducts,
     };
-
-    let fetchResponse = await fetch(
-      "http://localhost:3000/api/products/order",
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(orderObj),
-      }
-    );
-    let orderResult = await fetchResponse.json();
-    console.log(orderResult);
-    goToConfirmation(orderResult);
+    try {
+      let fetchResponse = await fetch(
+        "http://localhost:3000/api/products/order",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify(orderObj),
+        }
+      );
+      let orderResult = await fetchResponse.json();
+      goToConfirmation(orderResult);
+    } catch (err) {
+      console.log("Probleme avec l'opérateur fetch : " + err.message);
+    }
   }
 }
 
 // *************** FIN ENVOIE DES DONNEES DU FORMULAIRE VERS L'API *******************
+//
+//
+// ***************** DEBUT REDIRECTION VERS LA PAGE CONFIRMATION *********************
+
 async function goToConfirmation(orderResult) {
   let orderId = await orderResult.orderId;
-  console.log(orderId);
   document.location.href = "confirmation.html?orderId=" + orderId;
 }
+
+// ****************** FIN REDIRECTION VERS LA PAGE CONFIRMATION **********************

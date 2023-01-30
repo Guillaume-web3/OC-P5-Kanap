@@ -1,24 +1,17 @@
 // Récupération de l'id du produit via l'url
-let url = new URL(window.location.href)
-console.log(url)
-let id = url.searchParams.get("id")
-console.log(id)
+let url = new URL(window.location.href);
+let id = url.searchParams.get("id");
 
-/* 
-Récupération du JSON de l'API avec l'id en parametre
-Pour ajout des informations du produit
-*/
-fetch("http://localhost:3000/api/products/"+id)
-.then(function(res) {
+// Appel de l'API
+fetch("http://localhost:3000/api/products/" + id)
+  .then(function (res) {
     if (res.ok) {
-        return res.json();
+      return res.json();
+    } else {
+      console.log("Erreur");
     }
-    else {
-        console.log("Erreur")
-    }
-})
-.then(function(value) {
-    console.log(value);
+  })
+  .then(function (value) {
     // Ajout des Img, src et alt
     const img = document.createElement("img");
     let newImg = document.querySelector("div.item__img");
@@ -43,47 +36,49 @@ fetch("http://localhost:3000/api/products/"+id)
     // Ajout des options de couleurs
     let colors = document.getElementById("colors");
     for (color of value.colors) {
-        colors.add(new Option(color,color))
+      colors.add(new Option(color, color));
     }
-    })
-.catch(function(err) {
-    console.log("Probleme avec l'opérateur fetch : "+err.message);
-});
+  })
+  .catch(function (err) {
+    console.log("Probleme avec l'opérateur fetch : " + err.message);
+  });
 
 // Enregistrement du panier dans le localStorage
 function saveCart(cart) {
-    localStorage.setItem("cart",JSON.stringify(cart)); // Données du panier transformées en chaine de caractère    
+  localStorage.setItem("cart", JSON.stringify(cart)); // Données du panier transformées en chaine de caractère
 }
 // Récupération du panier à partir du localStorage
 function getCart() {
-    let cart = localStorage.getItem("cart");
-    if (cart == null) { // Test si le panier est vide - Evite l'erreur de reading push sur un null
-        return []; // Retourne un tableau vide si le panier est vide
-    }
-    else {
-        return JSON.parse(cart); // Retourne la valeur du panier si il n'est pas vide (données transformées en objet)
-    }
+  let cart = localStorage.getItem("cart");
+  if (cart == null) {
+    // Test si le panier est vide - Evite l'erreur de reading push sur un null
+    return []; // Retourne un tableau vide si le panier est vide
+  } else {
+    return JSON.parse(cart); // Retourne la valeur du panier si il n'est pas vide (données transformées en objet)
+  }
 }
 // Ajout d'un produit au panier
-document.getElementById("addToCart").addEventListener("click",function () { // Ecoute l'évènement click sur le bouton
-    let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
-    let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
-    if (selectedQuantity <= 0) {
-        alert("Quantité saisie incorrect");
-        return false
-    }
-    let cartProduct = {"id":id,"color":color}; // Définition d'un produit
-    console.log(cartProduct);
-    let cart = getCart();
-    let foundProduct = cart.find(p => p.id == cartProduct.id && p.color == cartProduct.color) // Recherche de la présence du produit dans le panier (id & couleur)
-    if (foundProduct != undefined) { // Si le produit exite dans le panier (n'est pas introuvable)
-        foundProduct.quantity = Number(foundProduct.quantity)+Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier     
-    }
-    else {
-        cartProduct.quantity = Number(selectedQuantity); // On ajoute l'article, à la quantité demandée
-        cart.push(cartProduct);
-    }    
-    saveCart(cart);
+document.getElementById("addToCart").addEventListener("click", function () {
+  // Ecoute l'évènement click sur le bouton
+  let color = document.getElementById("colors").value; // Récupère la valeur (le choix) du select "colors"
+  let selectedQuantity = document.getElementById("quantity").value; // Récupère la valeur de la quantité choisie
+  if (selectedQuantity <= 0) {
+    // Si la quantité inférieur ou égale à 0, on affiche un message d'alerte
+    alert("Quantité saisie incorrect");
+    return false;
+  }
+  let cartProduct = { id: id, color: color }; // Définition d'un produit
+  let cart = getCart();
+  let foundProduct = cart.find(
+    (p) => p.id == cartProduct.id && p.color == cartProduct.color
+  ); // Recherche de la présence du produit dans le panier (id & couleur)
+  if (foundProduct != undefined) {
+    // Si le produit exite dans le panier (n'est pas introuvable)
+    foundProduct.quantity =
+      Number(foundProduct.quantity) + Number(selectedQuantity); // On ajoute la nouvelle quantité demandée à la quantité déja existante dans le panier
+  } else {
+    cartProduct.quantity = Number(selectedQuantity); // On ajoute l'article, à la quantité demandée
+    cart.push(cartProduct);
+  }
+  saveCart(cart);
 });
-
-  
