@@ -25,93 +25,107 @@ async function getProductInfoById(id) {
   }
 }
 
+// Vérification de la présence d'article dans le panier
+function cartIsEmpty() {
+  let cart = getCart();
+  if (cart.length === 0) {
+    // Si le panier est vide, changer le h1 et effacer le formulaire
+    document.querySelector("#cartAndFormContainer h1").innerText =
+      "Votre panier est vide";
+    document.querySelector("#cartAndFormContainer .cart").innerText = "";
+    return true;
+  }
+}
+
 // Récupération des informations liées aux articles du panier
 async function getCartProductInfo() {
   let cart = getCart();
-  for (cartProduct of cart) {
-    // Pour chaque produit dans le panier on va :
-    let id = cartProduct.id; // Récuperer l'id
-    let color = cartProduct.color; // Récuperer la couleur choisi
-    let quantity = cartProduct.quantity; // Récuperer la quantité choisi
-    let product = await getProductInfoById(id); // Appeler l'API
-    let price = product.price; // Récuperer le prix via l'API
-    let altTxt = product.altTxt; // Récuperer l'altTxt via l'API
-    let imageUrl = product.imageUrl; // Récuperer l'imageUrl via l'API
-    let name = product.name; // Récuperer le nom via l'API
+  if (cartIsEmpty() != true) {
+    for (cartProduct of cart) {
+      // Pour chaque produit dans le panier on va :
+      let id = cartProduct.id; // Récuperer l'id
+      let color = cartProduct.color; // Récuperer la couleur choisi
+      let quantity = cartProduct.quantity; // Récuperer la quantité choisi
+      let product = await getProductInfoById(id); // Appeler l'API
+      let price = product.price; // Récuperer le prix via l'API
+      let altTxt = product.altTxt; // Récuperer l'altTxt via l'API
+      let imageUrl = product.imageUrl; // Récuperer l'imageUrl via l'API
+      let name = product.name; // Récuperer le nom via l'API
 
-    // Création des noeuds
-    const article = document.createElement("article");
-    const divImg = document.createElement("div");
-    const img = document.createElement("img");
-    const divContent = document.createElement("div");
-    const divContentDescription = document.createElement("div");
-    const h2 = document.createElement("h2");
-    const pColor = document.createElement("p");
-    const pPrice = document.createElement("p");
-    const divContentSettings = document.createElement("div");
-    const divContentSettingsQuantity = document.createElement("div");
-    const pQuantity = document.createElement("p");
-    const inputQuantity = document.createElement("input");
-    const divContentSettingsDelete = document.createElement("div");
-    const pDelete = document.createElement("p");
+      // Création des noeuds
+      const article = document.createElement("article");
+      const divImg = document.createElement("div");
+      const img = document.createElement("img");
+      const divContent = document.createElement("div");
+      const divContentDescription = document.createElement("div");
+      const h2 = document.createElement("h2");
+      const pColor = document.createElement("p");
+      const pPrice = document.createElement("p");
+      const divContentSettings = document.createElement("div");
+      const divContentSettingsQuantity = document.createElement("div");
+      const pQuantity = document.createElement("p");
+      const inputQuantity = document.createElement("input");
+      const divContentSettingsDelete = document.createElement("div");
+      const pDelete = document.createElement("p");
 
-    // Placement dans le DOM
-    document.getElementById("cart__items").appendChild(article);
-    article.appendChild(divImg);
-    divImg.appendChild(img);
-    article.appendChild(divContent);
-    divContent.appendChild(divContentDescription);
-    divContentDescription.appendChild(h2);
-    divContentDescription.appendChild(pColor);
-    divContentDescription.appendChild(pPrice);
-    divContent.appendChild(divContentSettings);
-    divContentSettings.appendChild(divContentSettingsQuantity);
-    divContentSettingsQuantity.appendChild(pQuantity);
-    divContentSettingsQuantity.appendChild(inputQuantity);
-    divContentSettings.appendChild(divContentSettingsDelete);
-    divContentSettingsDelete.appendChild(pDelete);
+      // Placement dans le DOM
+      document.getElementById("cart__items").appendChild(article);
+      article.appendChild(divImg);
+      divImg.appendChild(img);
+      article.appendChild(divContent);
+      divContent.appendChild(divContentDescription);
+      divContentDescription.appendChild(h2);
+      divContentDescription.appendChild(pColor);
+      divContentDescription.appendChild(pPrice);
+      divContent.appendChild(divContentSettings);
+      divContentSettings.appendChild(divContentSettingsQuantity);
+      divContentSettingsQuantity.appendChild(pQuantity);
+      divContentSettingsQuantity.appendChild(inputQuantity);
+      divContentSettings.appendChild(divContentSettingsDelete);
+      divContentSettingsDelete.appendChild(pDelete);
 
-    // Ajout des attributs
-    article.setAttribute("class", "cart__item");
-    article.setAttribute("data-id", id);
-    article.setAttribute("data-colors", color);
-    divImg.setAttribute("class", "cart__item__img");
-    img.setAttribute("src", imageUrl);
-    img.setAttribute("alt", altTxt);
-    divContent.setAttribute("class", "cart__item__content");
-    divContentDescription.setAttribute(
-      "class",
-      "cart__item__content__description"
-    );
-    divContentSettings.setAttribute("class", "cart__item__content__settings");
-    divContentSettingsQuantity.setAttribute(
-      "class",
-      "cart__item__content__settings__quantity"
-    );
-    inputQuantity.setAttribute("type", "number");
-    inputQuantity.setAttribute("class", "itemQuantity");
-    inputQuantity.setAttribute("name", "itemQuantity");
-    inputQuantity.setAttribute("min", 1);
-    inputQuantity.setAttribute("max", 100);
-    inputQuantity.setAttribute("value", quantity);
-    divContentSettingsDelete.setAttribute(
-      "class",
-      "cart__item__content__settings__delete"
-    );
-    pDelete.setAttribute("class", "deleteItem");
+      // Ajout des attributs
+      article.setAttribute("class", "cart__item");
+      article.setAttribute("data-id", id);
+      article.setAttribute("data-colors", color);
+      divImg.setAttribute("class", "cart__item__img");
+      img.setAttribute("src", imageUrl);
+      img.setAttribute("alt", altTxt);
+      divContent.setAttribute("class", "cart__item__content");
+      divContentDescription.setAttribute(
+        "class",
+        "cart__item__content__description"
+      );
+      divContentSettings.setAttribute("class", "cart__item__content__settings");
+      divContentSettingsQuantity.setAttribute(
+        "class",
+        "cart__item__content__settings__quantity"
+      );
+      inputQuantity.setAttribute("type", "number");
+      inputQuantity.setAttribute("class", "itemQuantity");
+      inputQuantity.setAttribute("name", "itemQuantity");
+      inputQuantity.setAttribute("min", 1);
+      inputQuantity.setAttribute("max", 100);
+      inputQuantity.setAttribute("value", quantity);
+      divContentSettingsDelete.setAttribute(
+        "class",
+        "cart__item__content__settings__delete"
+      );
+      pDelete.setAttribute("class", "deleteItem");
 
-    // Ajout des contenus
-    h2.innerText = name;
-    pColor.innerText = color;
-    pPrice.innerText = price + " €";
-    pQuantity.innerText = "Qté :";
-    pDelete.innerText = "Supprimer";
+      // Ajout des contenus
+      h2.innerText = name;
+      pColor.innerText = color;
+      pPrice.innerText = price + " €";
+      pQuantity.innerText = "Qté :";
+      pDelete.innerText = "Supprimer";
 
-    // Ecoute des évènements
-    inputQuantity.addEventListener("change", changeProductQuantity);
-    pDelete.addEventListener("click", deleteItem);
+      // Ecoute des évènements
+      inputQuantity.addEventListener("change", changeProductQuantity);
+      pDelete.addEventListener("click", deleteItem);
+    }
+    displayTotals();
   }
-  displayTotals();
 }
 
 // ***************************************** DEBUT CALCULS DES TOTAUX *****************************************
@@ -163,6 +177,8 @@ function changeProductQuantity(event) {
   let foundProduct = cart.find((p) => p.id == id && p.color == color); // Recherche de la présence du produit dans le panier (id & couleur)
   foundProduct.quantity = Number(newProductQuantity); // Redéfinition de la quantité
   saveCart(cart); // Sauvegarde des changements du panier
+  displayTotals();
+  cartIsEmpty();
 }
 
 // Enregistrement du panier dans le localStorage
@@ -180,6 +196,8 @@ function deleteItem(event) {
   cart.splice(cart.indexOf(foundProduct), 1); // Supprime du tableau l'index renvoyé par foundProduct
   saveCart(cart);
   productToDelete.remove();
+  displayTotals();
+  cartIsEmpty();
 }
 
 // ************************************* FIN MODIFICATIONS DU PANIER *************************************
@@ -309,10 +327,18 @@ async function sendToApi(event) {
       );
       let orderResult = await fetchResponse.json();
       goToConfirmation(orderResult);
+      clearCart();
     } catch (err) {
       console.log("Probleme avec l'opérateur fetch : " + err.message);
     }
+  } else {
+    alert("Veuillez remplir les champs");
   }
+}
+
+/* Suppression du panier */
+function clearCart() {
+  localStorage.clear();
 }
 
 // *************** FIN ENVOIE DES DONNEES DU FORMULAIRE VERS L'API *******************
